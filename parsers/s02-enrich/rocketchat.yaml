@@ -1,0 +1,10 @@
+name: timmiORG/rocketchat-whitelist
+description: "Whitelist events from rocketchat"
+filter: "evt.Meta.service == 'http' && evt.Meta.log_type in ['http_access-log', 'http_error-log']"
+whitelist:
+  reason: "RocketChat Whitelist"
+  expression:
+   - evt.Meta.http_status == '200' && evt.Meta.http_verb == 'GET' && evt.Parsed.request startsWith '/avatar/'
+## All 200 responses to `/avatar` are whitelisted if user is unauthenticated then it will be 401
+   - evt.Meta.http_status == '304' && evt.Meta.http_verb == 'GET' && evt.Parsed.request startsWith '/avatar/'
+## All 304 responses to `/avatar` are whitelisted if user is unauthenticated then it will be 401
