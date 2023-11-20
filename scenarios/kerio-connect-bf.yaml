@@ -1,0 +1,20 @@
+# Kerio-Connect HTTP bruteforce
+type: leaky
+name: timmiORG/kerio-connect-bf
+description: "Detect Kerio-Connect bruteforce attacks"
+filter: "evt.Meta.log_type_enh == 'kerio-http-attempt' || evt.Meta.log_type == 'kerio-connect' && evt.Meta.action == 'reject'"
+leakspeed: 1m
+capacity: 3
+groupby: evt.Meta.source_ip
+blackhole: 5m
+reprocess: true
+labels:
+    service: kerio-connect
+    confidence: 3
+    spoofable: 0
+    classification:
+        - attack.T1589
+    label: "Kerio-Connect Bruteforce"
+    behavior: "http:bruteforce"
+    remediation: true
+

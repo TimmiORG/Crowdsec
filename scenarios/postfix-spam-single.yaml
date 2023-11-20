@@ -1,0 +1,17 @@
+# postfix spam
+type: trigger
+name: timmiORG/postfix-spam-single
+description: "Detect spammers"
+filter: "evt.Meta.log_type_enh == 'spam-attempt' || evt.Meta.log_type == 'postfix' && evt.Meta.action == 'reject' && (evt.Meta.IsoCode != 'DE' && evt.Meta.IsoCode != 'IL')"
+references:
+  - https://en.wikipedia.org/wiki/Spamming
+groupby: evt.Meta.source_ip
+blackhole: 1m
+reprocess: false
+labels:
+  service: postfix
+  remediation: true
+  confidence: 3
+  spoofable: 0
+  behavior: "smtp:spam"
+  label: "Postfix spam"
