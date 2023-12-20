@@ -2,7 +2,7 @@
 type: trigger
 name: timmiORG/postfix-spam-single
 description: "Detect spammers"
-filter: "evt.Meta.log_type_enh == 'spam-attempt' && evt.Meta.log_type == 'postfix' && evt.Meta.action == 'reject' && (evt.Meta.IsoCode != 'DE' && evt.Meta.IsoCode != 'IL')"
+filter: "evt.Meta.log_type_enh == 'spam-attempt' && evt.Meta.log_type == 'postfix' && evt.Meta.action == 'reject' && ( evt.Meta.IsoCode != 'DE' && evt.Meta.IsoCode != 'IL' && evt.Meta.IsoCode != 'IT' )"
 references:
   - https://en.wikipedia.org/wiki/Spamming
 groupby: evt.Meta.source_ip
