@@ -17,4 +17,4 @@ labels:
     - attack.T1046
   behavior: "tcp:scan"
   label: "PF TCP Multi IP Port Scan"
-  remediation: false
+  remediation: true
