@@ -10,3 +10,6 @@ whitelist:
 ## All 304 responses to `/avatar` are whitelisted if user is unauthenticated then it will be 401
    - evt.Meta.http_status == '499' && evt.Meta.http_verb == 'GET' && evt.Parsed.request startsWith '/avatar/'
 ## All 499 responses to `/avatar` are whitelisted if user is unauthenticated then it will be 401
+   - evt.Meta.http_status == '200' && evt.Meta.http_verb == 'GET' && evt.Parsed.request startsWith '/file-upload/'
+## All 200 responses to `/file-upload` are whitelisted if user is unauthenticated then it will be 401
+
