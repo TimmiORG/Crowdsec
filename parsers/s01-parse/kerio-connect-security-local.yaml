@@ -1,0 +1,88 @@
+name: timmiORG/kerio-connect-security-logs
+description: "Parse Kerio Connect security logs"
+filter: "evt.Parsed.program == 'Kerio-Security'"
+onsuccess: next_stage
+debug: false
+pattern_syntax:
+  KERIO_AUTH_FAIL: "Failed %{DATA:kerio_service} login from %{IPORHOST:remote_addr} with SASL method %{NOTSPACE:method}."
+  KERIO_HTTP_AUTH_FAIL: "HTTP/%{DATA:kerio_service}: Invalid password for user %{DATA:kerio_user}. Attempt from IP address %{IPORHOST:remote_addr}."
+  KERIO_HTTP_USER_FAIL: "HTTP/%{DATA:kerio_service}: User %{DATA:kerio_user} doesn't exist. Attempt from IP address %{IPORHOST:remote_addr}."
+  KERIO_SPF_CHECK: "SPF check failed: The IP address '%{IPORHOST:remote_addr}' is not in permitted set for sender .*"
+  KERIO_BLACK_LIST: "IP address %{IPORHOST:remote_addr} found in DNS blacklist %{DATA:kerio_blacklist}, mail from .*"
+  KERIO_IMAP_AUTH_FAIL: "Failed %{DATA:kerio_service} login from %{IPORHOST:remote_addr}, .*"
+#  KERIO_SMTP_CLOSED_GREETING: '\[%{DATA:time}] SMTP Spam attack detected from %{IPORHOST:remote_addr}(?::%{POSINT:port})?, client closed connection before SMTP greeting'
+#  KERIO_SMTP_DATA_BEFORE_GREETING: '\[%{DATA:time}] SMTP Spam attack detected from %{IPORHOST:remote_addr}(?::%{POSINT:port})?, client sent data before SMTP greeting'
+#  KERIO_SPAM_FROM: '\[%{DATA:time}] SMTP Spam attack detected from %{IPORHOST:remote_addr}(?::%{POSINT:port})?'
+nodes:
+ - grok:
+     name: "KERIO_AUTH_FAIL"
+     apply_on: message
+     statics:
+       - meta: log_type_enh
+         value: spam-attempt
+       - meta: action
+         value: 'reject'
+       - meta: service
+         value: postfix
+       - meta: log_type
+         value: postfix
+ - grok:
+     name: "KERIO_HTTP_AUTH_FAIL"
+     apply_on: message
+     statics:
+       - meta: log_type_enh
+         value: kerio-http-attempt
+       - meta: action
+         value: 'reject'
+       - meta: service
+         value: kerio-connect
+ - grok:
+     name: "KERIO_HTTP_USER_FAIL"
+     apply_on: message
+     statics:
+       - meta: log_type_enh
+         value: kerio-http-attempt
+       - meta: action
+         value: 'reject'
+       - meta: service
+         value: kerio-connect
+ - grok:
+     name: "KERIO_SPF_CHECK"
+     apply_on: message
+     statics:
+       - meta: log_type_enh
+         value: spam-attempt
+       - meta: action
+         value: 'reject'
+       - meta: service
+         value: postfix
+       - meta: log_type
+         value: postfix
+ - grok:
+     name: "KERIO_BLACK_LIST"
+     apply_on: message
+     statics:
+       - meta: log_type_enh
+         value: spam-attempt
+       - meta: action
+         value: 'reject'
+       - meta: service
+         value: postfix
+       - meta: log_type
+         value: postfix
+ - grok:
+     name: "KERIO_IMAP_AUTH_FAIL"
+     apply_on: message
+     statics:
+       - meta: log_type_enh
+         value: spam-attempt
+       - meta: action
+         value: 'reject'
+       - meta: service
+         value: postfix
+       - meta: log_type
+         value: postfix
+statics:
+   - meta: source_ip
+     expression: evt.Parsed.remote_addr
+
