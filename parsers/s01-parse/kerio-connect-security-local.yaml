@@ -10,6 +10,7 @@ pattern_syntax:
   KERIO_SPF_CHECK: "SPF check failed: The IP address '%{IPORHOST:remote_addr}' is not in permitted set for sender .*"
   KERIO_BLACK_LIST: "IP address %{IPORHOST:remote_addr} found in DNS blacklist %{DATA:kerio_blacklist}, mail from .*"
   KERIO_IMAP_AUTH_FAIL: "Failed %{DATA:kerio_service} login from %{IPORHOST:remote_addr}, .*"
+  KERIO_RELAY_ATTEMPT: "Relay attempt from IP address %{IPORHOST:remote_addr}, mail from .*"
 #  KERIO_SMTP_CLOSED_GREETING: '\[%{DATA:time}] SMTP Spam attack detected from %{IPORHOST:remote_addr}(?::%{POSINT:port})?, client closed connection before SMTP greeting'
 #  KERIO_SMTP_DATA_BEFORE_GREETING: '\[%{DATA:time}] SMTP Spam attack detected from %{IPORHOST:remote_addr}(?::%{POSINT:port})?, client sent data before SMTP greeting'
 #  KERIO_SPAM_FROM: '\[%{DATA:time}] SMTP Spam attack detected from %{IPORHOST:remote_addr}(?::%{POSINT:port})?'
@@ -82,7 +83,18 @@ nodes:
          value: postfix
        - meta: log_type
          value: postfix
+ - grok:
+     name: "KERIO_RELAY_ATTEMPT"
+     apply_on: message
+     statics:
+       - meta: log_type_enh
+         value: spam-attempt
+       - meta: action
+         value: 'reject'
+       - meta: service
+         value: postfix
+       - meta: log_type
+         value: postfix
 statics:
    - meta: source_ip
      expression: evt.Parsed.remote_addr
-
