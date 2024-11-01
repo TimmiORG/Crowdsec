@@ -1,0 +1,18 @@
+type: leaky
+name: timmiORG/asterisk_bf_slow
+description: "Detect Asterisk user bruteforce slow"
+filter: evt.Meta.log_type == 'asterisk_failed_auth'
+groupby: evt.Meta.source_ip
+leakspeed: 10s
+capacity: 5
+blackhole: 10m
+labels:
+  service: asterisk
+  confidence: 3
+  spoofable: 0
+  classification:
+    - attack.T1110
+  behavior: "sip:bruteforce"
+  label: "Asterisk Bruteforce"
+  remediation: true
+
