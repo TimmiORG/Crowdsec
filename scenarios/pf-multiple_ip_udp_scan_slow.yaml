@@ -1,0 +1,20 @@
+type: leaky
+name: timmiORG/pf-multiple_ip_udp_scan_slow
+description: "ban IPs that are scanning us (very slow)"
+filter: "evt.Meta.log_type == 'pf_drop' && evt.Meta.service == 'udp'"
+groupby: evt.Meta.source_ip
+distinct: evt.Parsed.dst_ip
+capacity: 20
+leakspeed: 1m
+blackhole: 5m
+labels:
+  service: udp
+  confidence: 1
+  spoofable: 3
+  classification:
+    - attack.T1595.001
+    - attack.T1018
+    - attack.T1046
+  behavior: "udp:scan"
+  label: "PF UDP Multi IP Port Scan"
+  remediation: true
